@@ -6,18 +6,28 @@
 
 import weechat
 import subprocess
+import html
 
 SCRIPT_NAME = "notify_send"
 SCRIPT_AUTHOR = "Foxerfob"
-SCRIPT_VERSION = "0.1"
+SCRIPT_VERSION = "0.2"
 SCRIPT_LICENSE = "GPL3"
 SCRIPT_DESC = "Desktop notifications with toggle"
 
 notify_enabled = True
 
 
+def sanitize_text(text = ""):
+    escaped_slashes = text.replace('\\', '\\\\')
+    return html.escape(escaped_slashes)
+
+
 def notify_send(server_channel, nick, message):
     try:
+        server_channel = sanitize_text(server_channel)
+        nick = sanitize_text(nick) 
+        message = sanitize_text(message)
+
         title = f"WeeChat - {server_channel}"
         body = f"{nick}: {message}"
         subprocess.run(["notify-send", "-e", title, body], check=False)
